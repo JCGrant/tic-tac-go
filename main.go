@@ -31,12 +31,24 @@ func NewBoard() *Board {
 	return &b
 }
 
+func horizontalGridLine() (result string) {
+	result += "+"
+	for i := 0; i < boardSize; i++ {
+		result += " - +"
+	}
+	result += "\n"
+	return
+}
+
 func (b *Board) String() (result string) {
+	result += horizontalGridLine()
 	for _, row := range *b {
+		result += "|"
 		for _, r := range row {
-			result += string(r)
+			result += fmt.Sprintf(" %c |", r)
 		}
 		result += "\n"
+		result += horizontalGridLine()
 	}
 	return
 }
