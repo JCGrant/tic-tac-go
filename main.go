@@ -46,13 +46,21 @@ func horizontalGridLine() (result string) {
 }
 
 func (b *Board) String() (result string) {
+	result += "    "
+	for i := 0; i < boardSize; i++ {
+		result += fmt.Sprintf("%d   ", i+1)
+	}
+	result += "\n"
+	result += "  "
 	result += horizontalGridLine()
-	for _, row := range *b {
+	for i, row := range *b {
+		result += fmt.Sprintf("%d ", i+1)
 		result += "|"
 		for _, t := range row {
 			result += fmt.Sprintf(" %s |", t)
 		}
 		result += "\n"
+		result += "  "
 		result += horizontalGridLine()
 	}
 	return
