@@ -9,13 +9,18 @@ import (
 )
 
 type Tile rune
-type Board [][]Tile
 
 const (
 	empty  Tile = ' '
 	cross       = 'X'
 	naught      = 'O'
 )
+
+func (t Tile) String() string {
+	return fmt.Sprintf("%c", t)
+}
+
+type Board [][]Tile
 
 const boardSize = 3
 
@@ -44,8 +49,8 @@ func (b *Board) String() (result string) {
 	result += horizontalGridLine()
 	for _, row := range *b {
 		result += "|"
-		for _, r := range row {
-			result += fmt.Sprintf(" %c |", r)
+		for _, t := range row {
+			result += fmt.Sprintf(" %s |", t)
 		}
 		result += "\n"
 		result += horizontalGridLine()
