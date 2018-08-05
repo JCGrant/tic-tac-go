@@ -86,12 +86,23 @@ func getXY() ([]int, error) {
 }
 
 func main() {
-	b := NewBoard()
-	fmt.Println(b)
-	xy, err := getXY()
-	if err != nil {
-		fmt.Printf("getting x and y failed: %s", err)
+	for {
+		b := NewBoard()
+		players := []Tile{cross, naught}
+		currentPlayerIndex := 0
+
+		for i := 0; i < boardSize*boardSize; i++ {
+			currentPlayer := players[currentPlayerIndex]
+			fmt.Println(b)
+			fmt.Printf("current player: %s\n", currentPlayer)
+		GetXY:
+			xy, err := getXY()
+			if err != nil {
+				fmt.Printf("getting x and y failed: %s\n", err)
+				goto GetXY
+			}
+			b.MustSetTile(currentPlayer, xy[0], xy[1])
+			currentPlayerIndex = (currentPlayerIndex + 1) % len(players)
+		}
 	}
-	b.MustSetTile(cross, xy[0], xy[1])
-	fmt.Println(b)
 }
