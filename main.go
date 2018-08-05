@@ -58,8 +58,26 @@ func (b *Board) String() (result string) {
 	return
 }
 
+func (b *Board) MustGetTile(x, y int) Tile {
+	return [][]Tile(*b)[y-1][x-1]
+}
+
 func (b *Board) MustSetTile(tile Tile, x int, y int) {
-	[][]Tile(*b)[y][x] = tile
+	[][]Tile(*b)[y-1][x-1] = tile
+}
+
+func (b *Board) SetTile(tile Tile, x int, y int) error {
+	if x <= 0 || x > boardSize {
+		return fmt.Errorf("x is out of bounds")
+	}
+	if y <= 0 || y > boardSize {
+		return fmt.Errorf("y is out of bounds")
+	}
+	if b.MustGetTile(x, y) != empty {
+		return fmt.Errorf("a tile has already been placed at %d, %d", x, y)
+	}
+	b.MustSetTile(tile, x, y)
+	return nil
 }
 
 var inputRegExp = regexp.MustCompile(`(\d+)\s*,?\s*(\d+)`)
@@ -101,7 +119,11 @@ func main() {
 				fmt.Printf("getting x and y failed: %s\n", err)
 				goto GetXY
 			}
-			b.MustSetTile(currentPlayer, xy[0], xy[1])
+			err = b.SetTile(currentPlayer, xy[0], xy[1])
+			if err != nil {
+				fmt.Printf("setting tile failed: %s\n", err)
+				goto GetXY
+			}
 			currentPlayerIndex = (currentPlayerIndex + 1) % len(players)
 		}
 	}
