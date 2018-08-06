@@ -121,16 +121,18 @@ func main() {
 			currentPlayer := players[currentPlayerIndex]
 			fmt.Println(b)
 			fmt.Printf("current player: %s\n", currentPlayer)
-		GetXY:
-			xy, err := getXY()
-			if err != nil {
-				fmt.Printf("getting x and y failed: %s\n", err)
-				goto GetXY
-			}
-			err = b.SetTile(currentPlayer, xy[0], xy[1])
-			if err != nil {
-				fmt.Printf("setting tile failed: %s\n", err)
-				goto GetXY
+			for {
+				xy, err := getXY()
+				if err != nil {
+					fmt.Printf("getting x and y failed: %s\n", err)
+					continue
+				}
+				err = b.SetTile(currentPlayer, xy[0], xy[1])
+				if err != nil {
+					fmt.Printf("setting tile failed: %s\n", err)
+					continue
+				}
+				break
 			}
 			currentPlayerIndex = (currentPlayerIndex + 1) % len(players)
 		}
