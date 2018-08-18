@@ -67,18 +67,18 @@ func (b *Board) String() (result string) {
 }
 
 func (b *Board) MustGetTile(x, y int) Tile {
-	return [][]Tile(*b)[y-1][x-1]
+	return [][]Tile(*b)[y][x]
 }
 
 func (b *Board) MustSetTile(tile Tile, x int, y int) {
-	[][]Tile(*b)[y-1][x-1] = tile
+	[][]Tile(*b)[y][x] = tile
 }
 
 func (b *Board) SetTile(tile Tile, x int, y int) error {
-	if x <= 0 || x > boardSize {
+	if x < 0 || x >= boardSize {
 		return fmt.Errorf("x is out of bounds")
 	}
-	if y <= 0 || y > boardSize {
+	if y < 0 || y >= boardSize {
 		return fmt.Errorf("y is out of bounds")
 	}
 	if b.MustGetTile(x, y) != empty {
@@ -127,7 +127,7 @@ func main() {
 					fmt.Printf("getting x and y failed: %s\n", err)
 					continue
 				}
-				err = b.SetTile(currentPlayer, xy[0], xy[1])
+				err = b.SetTile(currentPlayer, xy[0]-1, xy[1]-1)
 				if err != nil {
 					fmt.Printf("setting tile failed: %s\n", err)
 					continue
