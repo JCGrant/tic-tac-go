@@ -111,6 +111,67 @@ func getXY() ([]int, error) {
 	return xy, nil
 }
 
+func tilesAreSame(tiles ...Tile) bool {
+	allEqual := true
+	for i := 0; i < len(tiles)-1; i++ {
+		currentTile := tiles[i]
+		nextTile := tiles[i+1]
+		allEqual = allEqual && (currentTile == nextTile)
+	}
+	return allEqual
+}
+
+func isWinningTileSet(tiles ...Tile) bool {
+	if len(tiles) != boardSize {
+		return false
+	}
+	if !tilesAreSame(tiles...) {
+		return false
+	}
+	if tiles[0] == empty {
+		return false
+	}
+	return true
+}
+
+func containsWinner(board *Board) (bool, Tile) {
+	// will collect the diagonals while collecting the tile rows/columns
+	forwardDiagonal := []Tile{}
+	backwardDiagonal := []Tile{}
+	for i := 0; i < boardSize; i++ {
+		// Can collect the tile rows and columns in the same pass
+		// because the board width == height.
+		// Otherwise this would cause an index out of range panic
+		row := []Tile{}
+		column := []Tile{}
+		for j := 0; j < boardSize; j++ {
+			rowTile := board.MustGetTile(j, i)
+			columnTile := board.MustGetTile(i, j)
+			row = append(row, rowTile)
+			column = append(column, columnTile)
+			if i == j {
+				forwardDiagonal = append(forwardDiagonal, rowTile)
+			}
+			if i+boardSize-1 == j {
+				backwardDiagonal = append(backwardDiagonal, rowTile)
+			}
+		}
+		if isWinningTileSet(row...) {
+			return true, row[0]
+		}
+		if isWinningTileSet(column...) {
+			return true, column[0]
+		}
+	}
+	if isWinningTileSet(forwardDiagonal...) {
+		return true, forwardDiagonal[0]
+	}
+	if isWinningTileSet(backwardDiagonal...) {
+		return true, backwardDiagonal[0]
+	}
+	return false, empty
+}
+
 func main() {
 	for {
 		b := NewBoard()
@@ -134,7 +195,20 @@ func main() {
 				}
 				break
 			}
+			if ok, tile := containsWinner(b); ok {
+				fmt.Printf(`
+#################################
+        Player %s has won!
+#################################`, tile)
+				fmt.Println()
+				break
+			}
 			currentPlayerIndex = (currentPlayerIndex + 1) % len(players)
 		}
+		fmt.Printf(`
+#################################
+          It's a draw!
+#################################`)
+		fmt.Println()
 	}
 }
