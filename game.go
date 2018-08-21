@@ -126,7 +126,7 @@ func (g *Game) Run() {
         Player %s has won!
 #################################`, tile)
 			fmt.Println()
-			break
+			return
 		}
 		currentPlayerIndex = (currentPlayerIndex + 1) % len(players)
 	}
