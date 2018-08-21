@@ -8,8 +8,10 @@ import (
 	"strconv"
 )
 
+// Game represents a single Tic Tac Toe game.
 type Game struct{}
 
+// NewGame initialises a new game.
 func NewGame() *Game {
 	return &Game{}
 }
@@ -98,6 +100,7 @@ func containsWinner(board *Board) (bool, Tile) {
 	return false, empty
 }
 
+// Run runs the game.
 func (g *Game) Run() {
 	b := NewBoard()
 	players := []Tile{cross, naught}

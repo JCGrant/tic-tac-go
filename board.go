@@ -2,10 +2,12 @@ package tic
 
 import "fmt"
 
+// Board is a grid of tiles.
 type Board [][]Tile
 
 const boardSize = 3
 
+// NewBoard initialises a new board, filling it with empty tiles.
 func NewBoard() *Board {
 	b := Board{}
 	for i := 0; i < boardSize; i++ {
@@ -48,14 +50,20 @@ func (b *Board) String() (result string) {
 	return
 }
 
+// MustGetTile fetchs a tile from a board.
+// It will panic if the indexes are out of the boards bounds.
 func (b *Board) MustGetTile(x, y int) Tile {
 	return [][]Tile(*b)[y][x]
 }
 
+// MustSetTile will set a tile on a board.
+// It will panic if the indexes are out of the boards bounds.
 func (b *Board) MustSetTile(tile Tile, x int, y int) {
 	[][]Tile(*b)[y][x] = tile
 }
 
+// SetTile will first check if the indexes are within the boards bounds, or
+// if a tile has already been placed. Otherwise it will return an error.
 func (b *Board) SetTile(tile Tile, x int, y int) error {
 	if x < 0 || x >= boardSize {
 		return fmt.Errorf("x is out of bounds")

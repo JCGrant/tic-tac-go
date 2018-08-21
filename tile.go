@@ -2,6 +2,7 @@ package tic
 
 import "fmt"
 
+// Tile represents a tile on a board
 type Tile rune
 
 const (
