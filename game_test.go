@@ -2,15 +2,8 @@ package tic
 
 import (
 	"fmt"
-	"reflect"
 	"testing"
 )
-
-func assertEqual(t *testing.T, actual, expected interface{}) {
-	if !reflect.DeepEqual(actual, expected) {
-		t.Fatalf("Expected %v, got %v", expected, actual)
-	}
-}
 
 func TestTilesAreSame(t *testing.T) {
 	tests := []struct {
@@ -45,7 +38,7 @@ func TestTilesAreSame(t *testing.T) {
 	for i, test := range tests {
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
 			areEqual := tilesAreSame(test.tiles...)
-			assertEqual(t, areEqual, test.areEqual)
+			assertEqual(t, test.areEqual, areEqual)
 		})
 	}
 }
