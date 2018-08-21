@@ -1,4 +1,4 @@
-package main
+package tic
 
 import (
 	"bufio"
@@ -8,84 +8,10 @@ import (
 	"strconv"
 )
 
-type Tile rune
+type Game struct{}
 
-const (
-	empty  Tile = ' '
-	cross       = 'X'
-	naught      = 'O'
-)
-
-func (t Tile) String() string {
-	return fmt.Sprintf("%c", t)
-}
-
-type Board [][]Tile
-
-const boardSize = 3
-
-func NewBoard() *Board {
-	b := Board{}
-	for i := 0; i < boardSize; i++ {
-		var row []Tile
-		for j := 0; j < boardSize; j++ {
-			row = append(row, empty)
-		}
-		b = append(b, row)
-	}
-	return &b
-}
-
-func horizontalGridLine() (result string) {
-	result += "+"
-	for i := 0; i < boardSize; i++ {
-		result += " - +"
-	}
-	result += "\n"
-	return
-}
-
-func (b *Board) String() (result string) {
-	result += "    "
-	for i := 0; i < boardSize; i++ {
-		result += fmt.Sprintf("%d   ", i+1)
-	}
-	result += "\n"
-	result += "  "
-	result += horizontalGridLine()
-	for i, row := range *b {
-		result += fmt.Sprintf("%d ", i+1)
-		result += "|"
-		for _, t := range row {
-			result += fmt.Sprintf(" %s |", t)
-		}
-		result += "\n"
-		result += "  "
-		result += horizontalGridLine()
-	}
-	return
-}
-
-func (b *Board) MustGetTile(x, y int) Tile {
-	return [][]Tile(*b)[y][x]
-}
-
-func (b *Board) MustSetTile(tile Tile, x int, y int) {
-	[][]Tile(*b)[y][x] = tile
-}
-
-func (b *Board) SetTile(tile Tile, x int, y int) error {
-	if x < 0 || x >= boardSize {
-		return fmt.Errorf("x is out of bounds")
-	}
-	if y < 0 || y >= boardSize {
-		return fmt.Errorf("y is out of bounds")
-	}
-	if b.MustGetTile(x, y) != empty {
-		return fmt.Errorf("a tile has already been placed at %d, %d", x, y)
-	}
-	b.MustSetTile(tile, x, y)
-	return nil
+func NewGame() *Game {
+	return &Game{}
 }
 
 var inputRegExp = regexp.MustCompile(`(\d+)\s*,?\s*(\d+)`)
@@ -172,43 +98,41 @@ func containsWinner(board *Board) (bool, Tile) {
 	return false, empty
 }
 
-func main() {
-	for {
-		b := NewBoard()
-		players := []Tile{cross, naught}
-		currentPlayerIndex := 0
+func (g *Game) Run() {
+	b := NewBoard()
+	players := []Tile{cross, naught}
+	currentPlayerIndex := 0
 
-		for i := 0; i < boardSize*boardSize; i++ {
-			currentPlayer := players[currentPlayerIndex]
-			fmt.Println(b)
-			fmt.Printf("current player: %s\n", currentPlayer)
-			for {
-				xy, err := getXY()
-				if err != nil {
-					fmt.Printf("getting x and y failed: %s\n", err)
-					continue
-				}
-				err = b.SetTile(currentPlayer, xy[0]-1, xy[1]-1)
-				if err != nil {
-					fmt.Printf("setting tile failed: %s\n", err)
-					continue
-				}
-				break
+	for i := 0; i < boardSize*boardSize; i++ {
+		currentPlayer := players[currentPlayerIndex]
+		fmt.Println(b)
+		fmt.Printf("current player: %s\n", currentPlayer)
+		for {
+			xy, err := getXY()
+			if err != nil {
+				fmt.Printf("getting x and y failed: %s\n", err)
+				continue
 			}
-			if ok, tile := containsWinner(b); ok {
-				fmt.Printf(`
+			err = b.SetTile(currentPlayer, xy[0]-1, xy[1]-1)
+			if err != nil {
+				fmt.Printf("setting tile failed: %s\n", err)
+				continue
+			}
+			break
+		}
+		if ok, tile := containsWinner(b); ok {
+			fmt.Printf(`
 #################################
         Player %s has won!
 #################################`, tile)
-				fmt.Println()
-				break
-			}
-			currentPlayerIndex = (currentPlayerIndex + 1) % len(players)
+			fmt.Println()
+			break
 		}
-		fmt.Printf(`
+		currentPlayerIndex = (currentPlayerIndex + 1) % len(players)
+	}
+	fmt.Printf(`
 #################################
           It's a draw!
 #################################`)
-		fmt.Println()
-	}
+	fmt.Println()
 }
